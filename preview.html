@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b0b0b">
+<title>Ankit — Personal</title>
+<style>
+  :root {
+    --bg: #0b0b0b;
+    --text: #f5f5f5;
+    --muted: #9b9b9b;
+    --glass: rgba(255,255,255,.09);
+    --glass-border: rgba(255,255,255,.14);
+    --shadow: rgba(0,0,0,.18);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { width:100%; height:100%; margin:0; }
+  body {
+    min-height:100svh;
+    overflow:hidden;
+    background:var(--bg);
+    color:var(--text);
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+    transition: background .45s ease, color .45s ease;
+  }
+
+  body.light {
+    --bg:#f5f5f5;
+    --text:#111;
+    --muted:#666;
+    --glass:rgba(0,0,0,.055);
+    --glass-border:rgba(0,0,0,.10);
+    --shadow:rgba(0,0,0,.10);
+  }
+
+  .page {
+    position:relative;
+    width:100%;
+    height:100svh;
+    display:grid;
+    place-items:center;
+    padding:24px;
+  }
+
+  .intro {
+    width:min(760px, 92vw);
+    text-align:center;
+    transform:translateY(-2vh);
+    animation:introIn .8s cubic-bezier(.2,.8,.2,1) both;
+  }
+
+  @keyframes introIn {
+    from { opacity:0; transform:translateY(12px); }
+    to { opacity:1; transform:translateY(-2vh); }
+  }
+
+  .eyebrow {
+    margin:0 0 14px;
+    font-size:clamp(11px, 1.2vw, 13px);
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+
+  h1 {
+    margin:0;
+    font-size:clamp(48px, 9vw, 108px);
+    line-height:.92;
+    letter-spacing:-.065em;
+    font-weight:700;
+  }
+
+  .bio {
+    width:min(620px, 90vw);
+    margin:22px auto 0;
+    font-size:clamp(14px, 1.7vw, 17px);
+    line-height:1.7;
+    color:var(--muted);
+  }
+
+  .bio strong { color:var(--text); font-weight:600; }
+
+  .buttons {
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-top:28px;
+    flex-wrap:wrap;
+  }
+
+  /* iPhone-style liquid glass buttons */
+  .liquid-btn {
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    min-width:132px;
+    height:48px;
+    padding:0 18px;
+    border:1px solid var(--glass-border);
+    border-radius:999px;
+    color:var(--text);
+    background:var(--glass);
+    backdrop-filter:blur(18px) saturate(150%);
+    -webkit-backdrop-filter:blur(18px) saturate(150%);
+    box-shadow:0 8px 28px var(--shadow), inset 0 1px 0 rgba(255,255,255,.22);
+    text-decoration:none;
+    font-size:14px;
+    font-weight:600;
+    overflow:hidden;
+    transition:transform .2s ease, background .3s ease, border-color .3s ease;
+  }
+
+  .liquid-btn::before {
+    content:"";
+    position:absolute;
+    left:10%; right:10%; top:1px;
+    height:45%;
+    border-radius:999px;
+    background:linear-gradient(to bottom, rgba(255,255,255,.28), transparent);
+    pointer-events:none;
+  }
+
+  .liquid-btn:hover { transform:translateY(-2px) scale(1.02); }
+  .liquid-btn:active { transform:scale(.97); }
+  .liquid-btn span { position:relative; z-index:1; }
+
+  .theme-btn {
+    position:fixed;
+    top:22px;
+    right:22px;
+    z-index:5;
+    width:48px;
+    height:48px;
+    border:1px solid var(--glass-border);
+    border-radius:50%;
+    color:var(--text);
+    background:var(--glass);
+    backdrop-filter:blur(18px) saturate(150%);
+    -webkit-backdrop-filter:blur(18px) saturate(150%);
+    box-shadow:0 8px 28px var(--shadow), inset 0 1px 0 rgba(255,255,255,.22);
+    cursor:pointer;
+    font-size:18px;
+    transition:transform .2s ease, background .3s ease;
+  }
+  .theme-btn:hover { transform:scale(1.06); }
+  .theme-btn:active { transform:scale(.94); }
+
+  .hint {
+    position:fixed;
+    bottom:18px;
+    left:50%;
+    transform:translateX(-50%);
+    color:var(--muted);
+    font-size:11px;
+    letter-spacing:.06em;
+    white-space:nowrap;
+    opacity:.75;
+  }
+
+  /* Transition layer */
+  .transition {
+    position:fixed;
+    inset:0;
+    z-index:100;
+    pointer-events:none;
+    display:grid;
+    place-items:center;
+    visibility:hidden;
+    opacity:0;
+    background:#0b0b0b;
+  }
+
+  .transition.active {
+    visibility:visible;
+    opacity:1;
+  }
+
+  .transition video {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  /* 0.01s is too short for reliable video playback on every browser.
+     This fallback guarantees the theme still changes instantly. */
+  .transition.flash-light { background:#f5f5f5; }
+  .transition.flash-dark { background:#0b0b0b; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:.01ms !important; transition-duration:.01ms !important; }
+  }
+
+  @media (max-width:600px) {
+    .page { padding:20px; }
+    .theme-btn { top:16px; right:16px; width:44px; height:44px; }
+    .intro { transform:translateY(-1vh); }
+    @keyframes introIn {
+      from { opacity:0; transform:translateY(8px); }
+      to { opacity:1; transform:translateY(-1vh); }
+    }
+    h1 { font-size:clamp(48px, 18vw, 76px); }
+    .bio { font-size:14px; line-height:1.65; margin-top:18px; }
+    .buttons { gap:10px; margin-top:22px; }
+    .liquid-btn { height:46px; min-width:124px; }
+    .hint { bottom:12px; font-size:10px; }
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <button class="theme-btn" id="themeBtn" aria-label="Switch theme" title="Switch theme">☾</button>
+
+    <section class="intro">
+      <p class="eyebrow">Hello, I'm</p>
+      <h1>Ankit.</h1>
+      <p class="bio">
+        18 years old from <strong>Sribhumi, Assam</strong> — a 12th standard pass-out,
+        still figuring out what to do next.<br><br>
+        I love capturing frames, making edits, building things for fun,
+        and listening to songs — starting with ghazals and somehow ending up with The Weeknd.
+        <br><br>
+        <strong>Still more to achieve in life, more to add.</strong>
+      </p>
+
+      <div class="buttons">
+        <a class="liquid-btn" href="https://www.instagram.com/ankitt.11x/" target="_blank" rel="noopener noreferrer">
+          <span>Instagram</span>
+        </a>
+        <a class="liquid-btn" href="mailto:ankitvibes35@gmail.com">
+          <span>Email</span>
+        </a>
+      </div>
+    </section>
+
+    <div class="hint">tap the moon / sun to switch</div>
+  </main>
+
+  <div class="transition" id="transition" aria-hidden="true">
+    <video id="transitionVideo" muted playsinline preload="auto"></video>
+  </div>
+
+<script>
+(() => {
+  const body = document.body;
+  const themeBtn = document.getElementById('themeBtn');
+  const transition = document.getElementById('transition');
+  const video = document.getElementById('transitionVideo');
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+
+  const TO_LIGHT = 'transition_to_light_0.01s.mp4';
+  const TO_DARK  = 'transition_to_dark_0.01s.mp4';
+  let busy = false;
+
+  function updateButton() {
+    const isLight = body.classList.contains('light');
+    themeBtn.textContent = isLight ? '☀' : '☾';
+    themeBtn.setAttribute('aria-label', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+    metaTheme.setAttribute('content', isLight ? '#f5f5f5' : '#0b0b0b');
+  }
+
+  function applyTheme(isLight) {
+    body.classList.toggle('light', isLight);
+    updateButton();
+    localStorage.setItem('ankit-theme', isLight ? 'light' : 'dark');
+  }
+
+  function instantFallback(isLight) {
+    transition.classList.add(isLight ? 'flash-light' : 'flash-dark', 'active');
+    applyTheme(isLight);
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        transition.classList.remove('active', 'flash-light', 'flash-dark');
+        busy = false;
+      }, 40);
+    });
+  }
+
+  async function switchTheme() {
+    if (busy) return;
+    busy = true;
+
+    const isGoingLight = !body.classList.contains('light');
+    const source = isGoingLight ? TO_LIGHT : TO_DARK;
+
+    transition.classList.remove('flash-light', 'flash-dark');
+    transition.classList.add('active');
+    video.src = source;
+    video.currentTime = 0;
+
+    // Change at the start of the 10ms asset. This avoids waiting for
+    // a 'timeupdate' event that may never fire for such a tiny video.
+    applyTheme(isGoingLight);
+
+    try {
+      await video.play();
+    } catch (err) {
+      instantFallback(isGoingLight);
+      return;
+    }
+
+    // Keep the transition visible for one paint frame, then remove it.
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        transition.classList.remove('active');
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+        busy = false;
+      }, 35);
+    });
+  }
+
+  const saved = localStorage.getItem('ankit-theme');
+  applyTheme(saved === 'light');
+  themeBtn.addEventListener('click', switchTheme);
+})();
+</script>
+</body>
+</html>
